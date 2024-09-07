@@ -56,20 +56,20 @@ sudo mount ${DEVICE}2 $MOUNT_WRITABLE
 
 
 PASSWD=$(mkpasswd --method=SHA-512 --rounds=4096 ghost)
+PASSWD='$5$9C2ZTZlQiU$pztS0Rvc/LbhwT6rk4ZKfA4wIZzonGUKsIENclYThl/'
+
 # Create the cloud-init user-data file
 echo "Creating cloud-init user-data file..."
 cat <<EOF | sudo tee $MOUNT_BOOT/user-data
 #cloud-config
 users:
-  - default
-    lock_passwd: false
   - name: motoko
     lock_passwd: false
     passwd: "$PASSWD"
-    groups: sudo, users
+    groups: sudo
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
-    ssh-authorized-keys:
+    ssh_authorized_keys:
       - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDht78kgOnlqAJY8turXqKBAcuqknNnu1UJM+KvdndY4qhPn2tZJHl2b40YY/3XWTQehzuN4Jt760o7Rc9eHDGS+94/pNuR+uHXBIUUQd186RWwkLz5YTfh5QROGG6DaeUErDgJbtfip9FLMyMm9s5YmB9eYDO/qSgtWB36MTIlFUhNYpOK3lVlAOCIyS2GM/illIug9TurGcJTXhV+rKH8GWnprkNsOLOQ4P468OrGv9ypKR9tH8y7Mlyrz5OJzKfJzzbnXZJrGEWw1OLUIxXwamlsiFP5Amk/WkXVolvQQZog3g+RddeOOSZmstOuz2NhA9uJ7mpG14NPLCQ790oW/d2Emd95hjt+kuvRhFl/r/axLdHdPdwVZ73fkerl1SMdwiprKGKepp3bulqsaetMoE8uKN+ojo5588/gU/W2XxJBoUfwPvFV1pScUgRw6ZlzIbTKG6+BuftLsu3T26KfdQxeZmNSF+dD/eyqEhVX/DGLqny8YBH6gCLDDCatiFs= motoko@motoko-main
 
 mounts:
@@ -87,6 +87,8 @@ packages:
 runcmd:
   - apt update && apt upgrade -y
   - echo "Welcome to Raspberry Pi" > /etc/motd
+  - (echo "ghost"; echo "ghost") | smbpasswd -a motoko
+  - reboot
 EOF
 
 # Optional: Create the network-config file
