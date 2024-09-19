@@ -57,7 +57,6 @@ sudo mount ${DEVICE}2 $MOUNT_WRITABLE
 
 PASSWD=$(mkpasswd --method=SHA-512 --rounds=4096 ghost)
 PASSWD='$5$9C2ZTZlQiU$pztS0Rvc/LbhwT6rk4ZKfA4wIZzonGUKsIENclYThl/'
-
 # Create the cloud-init user-data file
 echo "Creating cloud-init user-data file..."
 cat <<EOF | sudo tee $MOUNT_BOOT/user-data
@@ -83,6 +82,7 @@ packages:
   - curl
   - htop
   - samba
+  - nfs-kernel-server
 
 runcmd:
   - apt update && apt upgrade -y
